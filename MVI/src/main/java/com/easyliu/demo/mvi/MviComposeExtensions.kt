@@ -23,3 +23,9 @@ fun <VM : BaseMviViewModel<S, I>, S : MviUiState, I : MviUiIntent, A> VM.collect
     val mappedFlow = remember(prop1) { uiStateFlow.map { prop1.get(state) }.distinctUntilChanged() }
     return mappedFlow.collectAsState(initial = prop1.get(state))
 }
+
+@Composable
+fun <VM : BaseMviViewModel<S, I>, S : MviUiState, I : MviUiIntent, A> VM.collectAsState(block: (state: S) -> A): State<A> {
+    val mappedFlow = remember(block) { uiStateFlow.map { block(state) }.distinctUntilChanged() }
+    return mappedFlow.collectAsState(initial = block(state))
+}

@@ -28,6 +28,14 @@ interface MviView {
         }
 
     fun <S : MviUiState, I : MviUiIntent, T> BaseMviViewModel<S, I>.onEach(
+        block: (state: S) -> T,
+        action: suspend (T) -> Unit) {
+        uiStateFlow.map { Tuple1(block(it)) }.distinctUntilChanged()
+            .resolveSubscription(subscriptionScope) {
+                action(it.a)
+            }
+    }
+    fun <S : MviUiState, I : MviUiIntent, T> BaseMviViewModel<S, I>.onEach(
         prop1: KProperty1<S, T>,
         action: suspend (T) -> Unit) {
         uiStateFlow.map { Tuple1(prop1.get(it)) }.distinctUntilChanged()

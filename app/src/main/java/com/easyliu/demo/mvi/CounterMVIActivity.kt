@@ -2,6 +2,7 @@ package com.easyliu.demo.mvi
 
 import android.os.Bundle
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelLazy
@@ -13,17 +14,16 @@ class CounterMVIActivity : ComponentActivity(), MviView {
     private lateinit var add: TextView
     private lateinit var decrease: TextView
 
-    private val viewModel by ViewModelLazy(CounterViewModel::class,
-        { viewModelStore }, {
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    if (modelClass == CounterViewModel::class.java) {
-                        return CounterViewModel(CounterUiState(0)) as T
-                    }
-                    return super.create(modelClass)
+    private val viewModel by ViewModelLazy(CounterViewModel::class, { viewModelStore }, {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass == CounterViewModel::class.java) {
+                    return CounterViewModel(CounterUiState(0)) as T
                 }
+                return super.create(modelClass)
             }
-        })
+        }
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +43,17 @@ class CounterMVIActivity : ComponentActivity(), MviView {
             counter.text = buildString {
                 append("计数:")
                 append(it)
+            }
+        }
+        viewModel.onEvent {
+            when (it) {
+                is CounterEvent.ShowAddToast -> {
+                    Toast.makeText(this, "计数+1", Toast.LENGTH_SHORT).show()
+                }
+
+                is CounterEvent.ShowDecreaseToast -> {
+                    Toast.makeText(this, "计数-1", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

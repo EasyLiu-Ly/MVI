@@ -6,11 +6,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 
@@ -18,12 +21,13 @@ import kotlinx.coroutines.yield
  * @author easyliu
  * @date 2023/8/7 16:51
  */
-abstract class BaseMviViewModel<S : MviUiState, I : MviUiIntent>(initialState: S) :
-    ViewModel() {
+abstract class BaseMviViewModel<S : MviUiState, I : MviUiIntent, E : MviEvent>(initialState: S) : ViewModel() {
     private val mutableStateFlow = MutableStateFlow(initialState)
     val uiStateFlow = mutableStateFlow.asStateFlow()
     private val uiIntentFlow = MutableSharedFlow<I>()
     var state = initialState
+    private val eventChanel = Channel<E>()
+    val eventFlow = eventChanel.receiveAsFlow()
 
     protected abstract fun handleIntent(uiIntent: I)
 
@@ -37,14 +41,21 @@ abstract class BaseMviViewModel<S : MviUiState, I : MviUiIntent>(initialState: S
 
     protected fun updateState(reducer: S.() -> S) {
         viewModelScope.launch {
-            state = state.reducer()
-            mutableStateFlow.emit(state)
+            mutableStateFlow.update {
+                it.reducer()
+            }
         }
     }
 
     fun setIntent(uiIntent: I) {
         viewModelScope.launch {
             uiIntentFlow.emit(uiIntent)
+        }
+    }
+
+    protected fun sendEvent(event: E) {
+        viewModelScope.launch {
+            eventChanel.send(event)
         }
     }
 

@@ -8,9 +8,8 @@ import javax.inject.Inject
  * @date 2023/8/9 23:00
  */
 @HiltViewModel
-class CounterViewModel @Inject constructor() : BaseMviViewModel<CounterUiState, CounterUiIntent, CounterEvent>() {
-
-    override fun initialState() = CounterUiState()
+class CounterViewModel @Inject constructor(initialState: CounterUiState) :
+        BaseMviViewModel<CounterUiState, CounterUiIntent, CounterEvent>(initialState) {
 
     override fun handleIntent(uiIntent: CounterUiIntent) {
         when (uiIntent) {

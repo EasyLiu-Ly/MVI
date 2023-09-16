@@ -4,26 +4,16 @@ import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelLazy
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 
-@Suppress("UNCHECKED_CAST")
+@AndroidEntryPoint
 class CounterMVIActivity : ComponentActivity(), MviView {
     private lateinit var counter: TextView
     private lateinit var add: TextView
     private lateinit var decrease: TextView
 
-    private val viewModel by ViewModelLazy(CounterViewModel::class, { viewModelStore }, {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass == CounterViewModel::class.java) {
-                    return CounterViewModel(CounterUiState(0)) as T
-                }
-                return super.create(modelClass)
-            }
-        }
-    })
+    private val viewModel: CounterViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

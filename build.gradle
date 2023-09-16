@@ -3,6 +3,7 @@ buildscript {
 
         // global variables
         kotlin_version = '1.7.20'
+        hilt_version = '2.44.2'
 
         // local variables (use def)
         def androidx_test_version = '1.4.0'
@@ -44,6 +45,8 @@ buildscript {
                 "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version",
                 "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version",
 
+                //hilt
+                "com.google.dagger:hilt-android:$hilt_version",
 
                 "androidx.work:work-runtime-ktx:$work_version",
 
@@ -73,6 +76,7 @@ buildscript {
 
         librariesKapt = [
                 "androidx.room:room-compiler:$room_version",
+                "com.google.dagger:hilt-android-compiler:$hilt_version"
         ]
 
         librariesDebug = [
@@ -125,6 +129,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
     }
 }
 

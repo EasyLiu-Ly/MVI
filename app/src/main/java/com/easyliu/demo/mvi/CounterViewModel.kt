@@ -1,11 +1,17 @@
 package com.easyliu.demo.mvi
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
 /**
  * @author easyliu
  * @date 2023/8/9 23:00
  */
-class CounterViewModel(initialState: CounterUiState) :
-        BaseMviViewModel<CounterUiState, CounterUiIntent, CounterEvent>(initialState) {
+@HiltViewModel
+class CounterViewModel @Inject constructor() : BaseMviViewModel<CounterUiState, CounterUiIntent, CounterEvent>() {
+
+    override fun initialState() = CounterUiState()
+
     override fun handleIntent(uiIntent: CounterUiIntent) {
         when (uiIntent) {
             is CounterUiIntent.Add -> {

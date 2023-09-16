@@ -21,15 +21,19 @@ import kotlinx.coroutines.yield
  * @author easyliu
  * @date 2023/8/7 16:51
  */
-abstract class BaseMviViewModel<S : MviUiState, I : MviUiIntent, E : MviEvent>(initialState: S) : ViewModel() {
-    private val mutableStateFlow = MutableStateFlow(initialState)
+abstract class BaseMviViewModel<S : MviUiState, I : MviUiIntent, E : MviEvent> : ViewModel() {
+    private val mutableStateFlow by lazy { MutableStateFlow(initialState()) }
     val uiStateFlow = mutableStateFlow.asStateFlow()
     private val uiIntentFlow = MutableSharedFlow<I>()
-    var state = initialState
     private val eventChanel = Channel<E>()
     val eventFlow = eventChanel.receiveAsFlow()
 
     protected abstract fun handleIntent(uiIntent: I)
+
+    protected abstract fun initialState(): S
+
+    val state
+        get() = mutableStateFlow.value
 
     init {
         viewModelScope.launch {
